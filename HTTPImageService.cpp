@@ -1,10 +1,10 @@
-#include "HTTPHTMLService.h"
+#include "HTTPImageService.h"
 #include "HTTPResponseHeader.h"
 #include "HTTPNotFoundExceptionHandler.h"
 
-HTTPHTMLService::HTTPHTMLService(FileCache * p_fileCache,bool p_clean_cache )
-        :HTTPService(p_fileCache,p_clean_cache) {} // Constructor setting data members using initialization list
-bool HTTPHTMLService::execute(HTTPRequest * p_httpRequest,TCPSocket * p_tcpSocket)
+HTTPImageService::HTTPImageService(FileCache * p_fileCache,string p_image_mime_type,bool p_clean_cache ):image_mime_type(p_image_mime_type),
+        HTTPService(p_fileCache,p_clean_cache) {} // Constructor setting data members using initialization list
+bool HTTPImageService::execute(HTTPRequest * p_httpRequest,TCPSocket * p_tcpSocket)
 {
     try { // Try the following block and look for exceptions
         string resource = p_httpRequest->getResource(); // Fetching the resource from the HTTPRequest object
@@ -17,7 +17,7 @@ bool HTTPHTMLService::execute(HTTPRequest * p_httpRequest,TCPSocket * p_tcpSocke
         if ( getTimeStamp(s) <  getTimeStamp(fileCacheItem->getLastUpdateTime()) )
         {
             HTTPResponseHeader * httpResponseHeader = new HTTPResponseHeader(p_tcpSocket,"OK",200,"HTTP/1.1");
-            httpResponseHeader->setHeader("Content-Type","text/html"); // Set content type
+            httpResponseHeader->setHeader("Content-Type",image_mime_type); // Set content type
             // Fetch the date/time string of the last modified attribute and set it to the header
             httpResponseHeader->setHeader("Last-Modified",fileCacheItem->getLastUpdateTime());
             // This implies that the connection terminates after service the request; i.e. keep-alive is not supported
@@ -45,12 +45,12 @@ bool HTTPHTMLService::execute(HTTPRequest * p_httpRequest,TCPSocket * p_tcpSocke
     }
 }
 // Clone a new identical object and return it to the caller
-HTTPService * HTTPHTMLService::clone ()
+HTTPService * HTTPImageService::clone ()
 {
     // Instantiate an HTTPHTMLService object and set it up with the same fileCache. 
     // Notice that the clean flag is set to false as the current object will be carrying this out.
-    return new HTTPHTMLService(fileCache,false);  
+    return new HTTPImageService(fileCache,image_mime_type,false);  
 }
-HTTPHTMLService::~HTTPHTMLService() // Destructor
+HTTPImageService::~HTTPImageService() // Destructor
 {
 }

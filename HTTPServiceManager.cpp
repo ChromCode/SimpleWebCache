@@ -1,17 +1,17 @@
 #include "HTTPServiceManager.h"
 #include "HTTPNotAcceptableExceptionHandler.h"
-#include "HTTPXMLFORMService.h"
-#define WEB_CACHE_ROOT  "/Users/ericpoels/MakeUpTest/www"
+#include "HTTPHTMLService.h"
+#define WEB_CACHE_ROOT  "/Users/kmsobh/www"
 // Constructor:  building up the factory map
 HTTPServiceManager::HTTPServiceManager()
 {
     // adding the html and form service cloners
     services ["html"] = new HTTPHTMLService(new FileCache(WEB_CACHE_ROOT),true);
     services ["form"] = new HTTPFORMService();
-    services ["xml"] = new HTTPXMLFORMService();
-    services ["gif"] = new HTTPIMAGEService(new FileCache(WEB_CACHE_ROOT),true);
-    services ["jpg"] = new HTTPIMAGEService(new FileCache(WEB_CACHE_ROOT),true);
-    services ["png"] = new HTTPIMAGEService(new FileCache(WEB_CACHE_ROOT),true);
+    services ["xml"] = new HTTPFORMXMLService();
+    services ["png"] = new HTTPImageService(new FileCache(WEB_CACHE_ROOT),"image/png",true);
+    services ["jpg"] = new HTTPImageService(new FileCache(WEB_CACHE_ROOT),"image/jpg",true);
+    services ["gif"] = new HTTPImageService(new FileCache(WEB_CACHE_ROOT),"image/gif",true);
 }
 // Compare the file extention to the map key first and if not found compare the whole file name
 HTTPService * HTTPServiceManager::getService (string p_resource)
